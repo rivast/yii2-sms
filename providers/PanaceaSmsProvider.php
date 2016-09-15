@@ -5,6 +5,7 @@ namespace rivast\sms\providers;
 use Yii;
 use yii\base\InvalidParamException;
 
+use rivast\sms\SmsProviderInterface;
 use PanaceaMobile\PanaceaApi;
 
 class PanaceaSmsProvider implements SmsProviderInterface
@@ -50,26 +51,26 @@ class PanaceaSmsProvider implements SmsProviderInterface
     public function sendSms($number, $message) {
 
         if (empty($this->username)) {
-            Yii::error('Panacea Username was not defined.', 'sms');
-            throw new InvalidParamException('Panacea Username was not defined.', 500);
+            Yii::error('Panacea Username was not defined.', __METHOD__);
+            throw new InvalidParamException('Panacea Username was not defined.');
         }
 
         // If password is empty, use the Auth Token as the password. Panacea accepts either
         $this->password = empty($this->password) ? $this->authToken : $this->password;
 
         if (empty($this->password)) {
-            Yii::error('Panacea Password was not defined.', 'sms');
-            throw new InvalidParamException('Panacea Password was not defined.', 500);
+            Yii::error('Panacea Password was not defined.', __METHOD__);
+            throw new InvalidParamException('Panacea Password was not defined.');
         }
 
         if (empty($number)) {
-            Yii::warning('SMS recipient was not provided.', 'sms');
-            throw new InvalidParamException('SMS recipient was not provided.', 500);
+            Yii::warning('SMS recipient was not provided.', __METHOD__);
+            throw new InvalidParamException('SMS recipient was not provided.');
         }
 
         if (empty($message)) {
-            Yii::warning('SMS message was not provided.', 'sms');
-            throw new InvalidParamException('SMS message was not provided.', 500);
+            Yii::warning('SMS message was not provided.', __METHOD__);
+            throw new InvalidParamException('SMS message was not provided.');
         }
 
         $panacea = new PanaceaApi;
@@ -84,14 +85,14 @@ class PanaceaSmsProvider implements SmsProviderInterface
 
         // SMS sending successful
         if($response['status'] === 1) {
-            Yii::log('Panacea SMS sent: '.$this->lastSmsId, 'sms');
+            Yii::info('Panacea SMS sent: '.$this->_smsId, __METHOD__);
             return true; // Return Message ID
         }
 
         // SMS sending failed
         if($response['status'] < 0) {
             $this->_errorMessage = isset($response['message']) ? $response['message'] : null;
-            Yii::log('Panacea SMS failed: '.$this->lastSmsId.'. '.$this->lastErrorMessage, 'sms');
+            Yii::warning("Panacea SMS failed: {$this->_smsId}. {$this->_errorMessage}", __METHOD__);
         }
 
         return false;

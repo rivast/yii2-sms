@@ -63,15 +63,15 @@ class Sms extends Object implements SmsInterface
     public function init()
     {
         if ($this->defaultProvider === null) {
-            throw new InvalidParamException('Please set the default SMS provider you want to use.', 500);
+            throw new InvalidParamException('Default SMS provider was not defined.');
         }
 
-        if (count($this->providers) === 0 || !in_array($this->defaultProvider, $this->providers)) {
-            throw new InvalidParamException('Please define a valid SMS provider.', 500);
+        if (count($this->providers) === 0 || !array_key_exists($this->defaultProvider, $this->providers)) {
+            throw new InvalidParamException('No valid SMS provider was defined.');
         }
 
         foreach($this->providers as $name => $config) {
-            $config['class'] = "{$name}SmsProvider";
+            $config['class'] = "\\rivast\\sms\\providers\\{$name}SmsProvider";
             $this->_providers[$name] = Yii::createObject($config);
         }
 
@@ -89,7 +89,7 @@ class Sms extends Object implements SmsInterface
      */
     public function send($number, $message, $extra = [])
     {
-        Yii::trace("Send SMS to {$number}: $message", 'sms');
+        Yii::trace("Sending SMS to {$number}: {$message}", __METHOD__);
 
         if ($this->dryRun) {
             $sent = true;
@@ -97,10 +97,8 @@ class Sms extends Object implements SmsInterface
             $sent = $this->getProvider()->sendSMS($number, $message);
         }
 
-        Yii::trace("SMS sent to {$number}: $message", 'sms');
-
         if (!empty($this->afterSend)) {
-            call_user_func_array($this->afterSend, array($number, $message, $sent, $this->getProvider()->lastErrorMessage));
+            call_user_func_array($this->afterSend, array($number, $message, $sent, $this->lastErrorMessage, $extra));
         }
 
         return $sent;
@@ -113,7 +111,7 @@ class Sms extends Object implements SmsInterface
      * @return string
      */
     public function getLastSmsId() {
-        return $this->getProvider()->lastSmsId;
+        return $this->getProvider()->getLastSmsId();
     }
 
     /**
@@ -123,7 +121,7 @@ class Sms extends Object implements SmsInterface
      * @return string
      */
     public function getLastErrorMessage() {
-        return $this->getProvider()->lastErrorMessage;
+        return $this->getProvider()->getLastErrorMessage();
     }
 
     /**
@@ -133,4 +131,5 @@ class Sms extends Object implements SmsInterface
     private function getProvider() {
         return $this->_providers[$this->defaultProvider];
     }
+
 }
