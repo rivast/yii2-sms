@@ -1,0 +1,24 @@
+{
+    "name": "rivast/yii2-sms",
+    "type": "yii2-extension",
+    "description": "Extension to send SMS from Yii2 using various SMS providers.",
+    "keywords": ["yii2","extension","sms","clickatell","panacea"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Riaan van Staden",
+            "email": "vanstadenr1@gmail.com"
+        }
+    ],
+    "require": {
+        "yiisoft/yii2": ">=2.0.0",
+        "arcturial/clickatell": "2.1.6",
+        "superbalist/panaceaapi": "1.0.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "rivast\\yii2\\sms\\": ""
+        }
+    }
+}
+
