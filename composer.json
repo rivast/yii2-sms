@@ -4,7 +4,7 @@
     "type": "yii2-extension",
     "keywords": ["yii2","extension","sms","clickatell","panacea"],
     "require": {
-        "yiisoft/yii2": ">=2.0.0",
+        "yiisoft/yii2": "*",
         "arcturial/clickatell": "2.1.6",
         "superbalist/panaceaapi": "1.0.0"
     },
